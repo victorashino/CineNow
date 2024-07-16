@@ -1,4 +1,4 @@
-package com.devspacecinenow.common.data
+package com.devspacecinenow.common.data.remote
 
 import com.devspacecinenow.BuildConfig
 import okhttp3.OkHttpClient

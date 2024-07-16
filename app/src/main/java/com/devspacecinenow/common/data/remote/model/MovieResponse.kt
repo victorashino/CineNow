@@ -1,4 +1,4 @@
-package com.devspacecinenow.common.model
+package com.devspacecinenow.common.data.remote.model
 
 @kotlinx.serialization.Serializable
 data class MovieResponse(
