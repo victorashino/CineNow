@@ -1,16 +1,19 @@
 package com.devspacecinenow.list.presentation
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.devspacecinenow.CineNowApplication
-import com.devspacecinenow.common.data.remote.RetrofitClient
-import com.devspacecinenow.list.data.remote.ListService
+import com.devspacecinenow.list.data.ListRepository
 import com.devspacecinenow.list.data.MovieListRepository
 import com.devspacecinenow.list.presentation.ui.MovieListUiState
 import com.devspacecinenow.list.presentation.ui.MovieUiData
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +21,8 @@ import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 
 class MovieListViewModel(
-    private val repository: MovieListRepository
+    val repository: ListRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _uiNowPlaying = MutableStateFlow(MovieListUiState())
@@ -33,6 +37,9 @@ class MovieListViewModel(
     private val _uiPopular = MutableStateFlow(MovieListUiState())
     val uiPopular: StateFlow<MovieListUiState> = _uiPopular
 
+    private val _isNetworkAvailable = MutableStateFlow(false)
+    val isNetworkAvailable: StateFlow<Boolean> = _isNetworkAvailable
+
     init {
         fetchNowPlayingMovies()
         fetchTopRatedMovies()
@@ -40,9 +47,15 @@ class MovieListViewModel(
         fetchPopularMovies()
     }
 
-    private fun fetchNowPlayingMovies() = viewModelScope.launch(Dispatchers.IO) {
-        _uiNowPlaying.value = MovieListUiState(isLoading = true)
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
+    private fun fetchNowPlayingMovies() = viewModelScope.launch(dispatcher) {
+        _uiNowPlaying.value = MovieListUiState(isLoading = true)
         val result = repository.getNowPlaying()
         if (result.isSuccess) {
             val movies = result.getOrNull()
@@ -70,7 +83,7 @@ class MovieListViewModel(
         }
     }
 
-    private fun fetchTopRatedMovies() = viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchTopRatedMovies() = viewModelScope.launch(dispatcher) {
         _uiTopRated.value = MovieListUiState(isLoading = true)
 
         val result = repository.getTopRated()
@@ -100,7 +113,7 @@ class MovieListViewModel(
         }
     }
 
-    private fun fetchUpcomingMovies() = viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchUpcomingMovies() = viewModelScope.launch(dispatcher) {
         _uiUpcoming.value = MovieListUiState(isLoading = true)
 
         val result = repository.getUpComing()
@@ -130,7 +143,7 @@ class MovieListViewModel(
         }
     }
 
-    private fun fetchPopularMovies() = viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchPopularMovies() = viewModelScope.launch(dispatcher) {
         _uiPopular.value = MovieListUiState(isLoading = true)
 
         val result = repository.getPopular()
@@ -163,7 +176,6 @@ class MovieListViewModel(
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val listService = RetrofitClient.retrofitInstance.create(ListService::class.java)
                 val application = checkNotNull(extras[APPLICATION_KEY])
                 return MovieListViewModel(
                     repository = (application as CineNowApplication).repository

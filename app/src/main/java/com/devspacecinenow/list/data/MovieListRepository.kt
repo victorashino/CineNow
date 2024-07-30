@@ -2,15 +2,17 @@ package com.devspacecinenow.list.data
 
 import com.devspacecinenow.common.data.model.Movie
 import com.devspacecinenow.common.data.remote.model.MovieResponse
+import com.devspacecinenow.list.data.local.LocalDataSource
 import com.devspacecinenow.list.data.local.MovieListLocalDataSource
 import com.devspacecinenow.list.data.remote.MovieListRemoteDataSource
+import com.devspacecinenow.list.data.remote.RemoteDataSource
 
 class MovieListRepository(
-    private val local: MovieListLocalDataSource,
-    private val remote: MovieListRemoteDataSource
-) {
+    private val local: LocalDataSource,
+    private val remote: RemoteDataSource
+) : ListRepository {
 
-    suspend fun getNowPlaying(): Result<List<Movie>?> {
+    override suspend fun getNowPlaying(): Result<List<Movie>?> {
         return try {
             val result = remote.getNowPlaying()
             if (result.isSuccess) {
@@ -33,7 +35,7 @@ class MovieListRepository(
         }
     }
 
-    suspend fun getTopRated(): Result<List<Movie>?> {
+    override suspend fun getTopRated(): Result<List<Movie>?> {
         return try {
             val result = remote.getTopRated()
             if (result.isSuccess) {
@@ -56,7 +58,7 @@ class MovieListRepository(
         }
     }
 
-    suspend fun getUpComing(): Result<List<Movie>?> {
+    override suspend fun getUpComing(): Result<List<Movie>?> {
         return try {
             val result = remote.getUpComing()
             if (result.isSuccess) {
@@ -79,7 +81,7 @@ class MovieListRepository(
         }
     }
 
-    suspend fun getPopular(): Result<List<Movie>?> {
+    override suspend fun getPopular(): Result<List<Movie>?> {
         return try {
             val result = remote.getPopular()
             if (result.isSuccess) {

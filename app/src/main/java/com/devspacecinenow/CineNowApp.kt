@@ -25,10 +25,12 @@ fun CineNowApp(
             )
         }
         composable(
-            route = "movieDetail" + "/{itemId}",
-            arguments = listOf(navArgument("itemId") {
-                type = NavType.StringType
-            })
+            route = "movieDetail/{itemId}",
+            arguments = listOf(
+                navArgument("itemId") {
+                    type = NavType.StringType
+                }
+            )
         ) {backStackEntry ->
             val movieId = requireNotNull(backStackEntry.arguments?.getString("itemId"))
             MovieDetailScreen(

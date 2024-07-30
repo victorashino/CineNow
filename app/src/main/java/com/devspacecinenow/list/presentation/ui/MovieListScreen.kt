@@ -1,5 +1,6 @@
 package com.devspacecinenow.list.presentation.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -27,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.devspacecinenow.common.data.remote.model.MovieDto
 import com.devspacecinenow.list.presentation.MovieListViewModel
 
 @Composable
@@ -36,10 +36,14 @@ fun MovieListScreen(
     viewModel: MovieListViewModel
     ) {
 
+    val context = LocalContext.current
+    val isConnected = viewModel.isNetworkAvailable(context)
+
     val nowPlayingMovies by viewModel.uiNowPlaying.collectAsState()
     val topRatedMovies by viewModel.uiTopRated.collectAsState()
     val upcomingMovies by viewModel.uiUpcoming.collectAsState()
     val popularMovies by viewModel.uiPopular.collectAsState()
+    val haveInternet by viewModel.isNetworkAvailable.collectAsState()
 
     MovieListContent(
         topRatedMovies = topRatedMovies,
@@ -47,7 +51,12 @@ fun MovieListScreen(
         popularMovies = popularMovies,
         upcomingMovies = upcomingMovies
     ) { itemClicked ->
-        navController.navigate(route = "movieDetail/${itemClicked.id}")
+        if (isConnected) {
+            navController.navigate(route = "movieDetail/${itemClicked.id}")
+        } else {
+            Toast.makeText(context, "Sem acesso a internet", Toast.LENGTH_SHORT).show()
+        }
+
     }
 }
 

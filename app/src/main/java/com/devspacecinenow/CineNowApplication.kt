@@ -9,7 +9,7 @@ import com.devspacecinenow.list.data.local.MovieListLocalDataSource
 import com.devspacecinenow.list.data.remote.ListService
 import com.devspacecinenow.list.data.remote.MovieListRemoteDataSource
 
-class CineNowApplication: Application() {
+open class CineNowApplication: Application() {
 
     private val db by lazy {
         Room.databaseBuilder(
@@ -30,7 +30,7 @@ class CineNowApplication: Application() {
         MovieListRemoteDataSource(listService)
     }
 
-    val repository: MovieListRepository by lazy {
+    open val repository: MovieListRepository by lazy {
         MovieListRepository(
             local = localDataSource,
             remote = remoteDataSource

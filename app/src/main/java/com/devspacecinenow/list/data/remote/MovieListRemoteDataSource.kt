@@ -3,13 +3,12 @@ package com.devspacecinenow.list.data.remote
 import android.accounts.NetworkErrorException
 import com.devspacecinenow.common.data.local.MovieCategory
 import com.devspacecinenow.common.data.model.Movie
-import com.devspacecinenow.common.data.remote.model.MovieResponse
 
 class MovieListRemoteDataSource(
     private val listService: ListService
-) {
+) : RemoteDataSource {
 
-    suspend fun getNowPlaying(): Result<List<Movie>?> {
+    override suspend fun getNowPlaying(): Result<List<Movie>?> {
         return try {
             val response = listService.getNowPlayingMovies()
             if (response.isSuccessful) {
@@ -32,7 +31,7 @@ class MovieListRemoteDataSource(
         }
     }
 
-    suspend fun getTopRated(): Result<List<Movie>?>  {
+    override suspend fun getTopRated(): Result<List<Movie>?>  {
         return try {
             val response = listService.getTopRatedMovies()
             if (response.isSuccessful) {
@@ -55,7 +54,7 @@ class MovieListRemoteDataSource(
         }
     }
 
-    suspend fun getUpComing(): Result<List<Movie>?>  {
+    override suspend fun getUpComing(): Result<List<Movie>?>  {
         return try {
             val response = listService.getUpcoming()
             if (response.isSuccessful) {
@@ -78,7 +77,7 @@ class MovieListRemoteDataSource(
         }
     }
 
-    suspend fun getPopular(): Result<List<Movie>?>  {
+    override suspend fun getPopular(): Result<List<Movie>?>  {
         return try {
             val response = listService.getPopular()
             if (response.isSuccessful) {
