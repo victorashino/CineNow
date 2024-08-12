@@ -2,13 +2,7 @@ package com.devspacecinenow.detail
 
 import androidx.lifecycle.ViewModel
 import app.cash.turbine.test
-import com.devspacecinenow.common.data.local.MovieCategory
-import com.devspacecinenow.common.data.model.Movie
 import com.devspacecinenow.common.data.remote.model.MovieDto
-import com.devspacecinenow.list.presentation.ui.MovieListUiState
-import com.devspacecinenow.list.presentation.ui.MovieUiData
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -16,7 +10,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import retrofit2.Response
 
 class MovieDetailViewModelTest : ViewModel() {
 

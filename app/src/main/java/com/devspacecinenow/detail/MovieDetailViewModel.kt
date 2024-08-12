@@ -9,16 +9,20 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.devspacecinenow.common.data.remote.RetrofitClient
 import com.devspacecinenow.common.data.remote.model.MovieDto
 import com.devspacecinenow.detail.data.DetailService
+import com.devspacecinenow.di.DispatcherIO
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MovieDetailViewModel(
+@HiltViewModel
+class MovieDetailViewModel @Inject constructor(
     private val detailService: DetailService,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    @DispatcherIO private val dispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _uiMovieDetail = MutableStateFlow<MovieDto?>(null)
@@ -30,25 +34,6 @@ class MovieDetailViewModel(
             _uiMovieDetail.value = response.body()
         } else {
             Log.d("MovieDetailViewModel", "Request Error :: ${response.errorBody()}")
-        }
-    }
-
-    fun cleanMovieId() {
-        viewModelScope.launch {
-            delay(1000)
-            _uiMovieDetail.value = null
-        }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val detailService =
-                    RetrofitClient.retrofitInstance.create(DetailService::class.java)
-                return MovieDetailViewModel(
-                    detailService
-                ) as T
-            }
         }
     }
 }
